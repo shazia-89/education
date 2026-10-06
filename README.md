@@ -34,14 +34,26 @@
 
 В проекте уже есть минимальный LiteSVM-тест `create_token`. Его нужно усилить и добавить тесты остальных реализованных инструкций.
 
-### Что нужно сделать
+### Реализованное покрытие
 
-- В тесте `create_token` проверить `decimals`, mint authority, supply и владельца mint, а не только наличие аккаунта.
-- Покрыть `create_token_account`: проверить владельца token account, mint и token program.
-- Покрыть `mint_tokens`: проверить изменение баланса получателя и общего supply.
-- Покрыть `transfer_tokens`: проверить оба баланса и неизменность общего supply.
-- Добавить негативные сценарии: нулевая сумма, неверный authority, другой mint и одинаковые source/destination.
-- Обновить README в своём fork: указать версии, команды запуска и кратко описать добавленные тесты.
+- `creates_token_2022_mint` проверяет owner mint, `decimals`, mint authority и начальный supply.
+- `creates_token_account_with_expected_owner_mint_and_program` проверяет owner token account, владельца токенов, mint и token program.
+- `mints_tokens_and_updates_recipient_balance_and_supply` проверяет баланс получателя и общий supply после mint.
+- `transfers_tokens_and_keeps_supply_unchanged` проверяет уменьшение source, увеличение destination и неизменность общего supply.
+- Негативные тесты проверяют нулевую сумму, неверный authority, несовпадающий mint и одинаковые source/destination.
+
+### Команды и ожидаемый результат
+
+После чистого checkout ветки задания выполните:
+
+```bash
+anchor build --ignore-keys
+cargo test --workspace --locked
+```
+
+Ожидаемый результат: сборка завершается без ошибок, а все LiteSVM-тесты завершаются со статусом `ok`.
+
+Тесты загружают собранный `target/deploy/solana_level_1_token_starter.so`, поэтому `anchor build --ignore-keys` необходимо выполнить перед `cargo test`.
 
 ### Готовность задания
 
@@ -103,3 +115,24 @@ cargo test --workspace --locked
 ## Что считается современным решением
 
 Современность здесь определяется не только номером версии. Решение должно использовать строгие account constraints, проверяемые state transitions, Token-2022 для нового токена, `token_interface` для совместимости, `transfer_checked` для переводов и воспроизводимые LiteSVM-тесты. Если официальные стабильные рекомендации Solana или Anchor изменятся, студент должен зафиксировать выбранные версии и объяснить отклонение в README.
+
+
+## Assignment 2 — secure token burning
+
+Implemented `burn_tokens` using `anchor_spl::token_interface` and `burn_checked`.
+
+The burn instruction:
+- requires a positive amount;
+- checks the mint/token program through Anchor account constraints;
+- requires the source token account to belong to the signer;
+- uses the mint decimals for `burn_checked`;
+- burns tokens from the source account and decreases total supply.
+
+Tests cover successful burning and failed transactions for zero amount, wrong authority, wrong mint, and insufficient balance. Failed transactions also verify that token balance and supply remain unchanged.
+
+### Commands
+
+```bash
+anchor build --ignore-keys
+cargo test --workspace --locked
+```
