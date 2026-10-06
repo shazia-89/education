@@ -2974,6 +2974,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "escrow"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+ "litesvm",
+ "solana-keypair",
+ "solana-level-1-token-starter",
+ "solana-message",
+ "solana-signer",
+ "solana-transaction",
+]
+
+[[package]]
 name = "solana-loader-v3-interface"
 version = "6.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
